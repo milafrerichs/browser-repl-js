@@ -87,13 +87,13 @@
 	onMount(() => {
 		if (window.CodeMirror) {
 			CodeMirror = window.CodeMirror;
-			createEditor(mode || 'javascript').then(() => {
+			createEditor(mode || 'js').then(() => {
 				if (editor) editor.setValue(code || '');
 			});
 		} else {
 			codemirror_promise.then(async mod => {
 				CodeMirror = mod.default;
-				await createEditor(mode || 'javascript');
+				await createEditor(mode || 'js');
 				if (editor) editor.setValue(code || '');
 			});
 		}
