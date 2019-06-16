@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+  <head>
+    <style>
+    </style>
+    <script>
+      (function(){
+        function handle_message(event) {
+					eval(event.data.script)
+        }
+        window.addEventListener('message', handle_message, false);
+      }).call(this);
+    </script>
+  </head>
+  <body></body>
+</html>
