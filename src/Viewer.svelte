@@ -1,6 +1,24 @@
 <script>
 	import srcdoc from './srcdoc/index.js';
-	export let iframe;
+	import { onMount } from 'svelte';
+	let iframe;
+	export let injectedJS = '';
+	export let injectedCSS = '';
+	export let code = '';
+	let ready;
+	let message = '';
+	onMount(() => {
+		iframe.addEventListener('load', () => {
+			ready = true;
+		});
+	});
+	$: if(code) {
+		message = `
+		document.body.innerHTML = '';
+		${code}
+		`
+		iframe.contentWindow.postMessage({ script: message }, '*');
+	}
 </script>
 <iframe
 	title="Result"

@@ -9,11 +9,12 @@ const production = !process.env.ROLLUP_WATCH;
 
 export default {
 	input: 'src/main.js',
-	output: {
-		sourcemap: true,
-		format: 'iife',
+  output: {
 		name: 'app',
-		file: 'public/bundle.js'
+		format: 'iife',
+		sourcemap: true,
+		file: 'public/main.js',
+
 	},
 	plugins: [
 		svelte({
@@ -31,18 +32,15 @@ export default {
 		// some cases you'll need additional configuration —
 		// consult the documentation for details:
 		// https://github.com/rollup/rollup-plugin-commonjs
-		resolve({ browser: true }),
-		commonjs(),
+		resolve(),
     html(),
-
-		// Watch the `public` directory and refresh the
-		// browser on changes when not in production
-		!production && livereload('public'),
+		commonjs(),
 
 		// If we're building for production (npm run build
 		// instead of npm run dev), minify
 		production && terser()
 	],
+
 	watch: {
 		clearScreen: false
 	}

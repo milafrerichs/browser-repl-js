@@ -3,10 +3,17 @@
   <head>
     <style>
     </style>
+		<!-- Inject Style instead of adding it here --!>
+		<script src="https://d3js.org/d3.v5.min.js"></script>
     <script>
       (function(){
         function handle_message(event) {
-					eval(event.data.script)
+					try {
+						eval(event.data.script)
+					} catch(e) {
+						console.log(e)
+						//send error bacl
+					}
         }
         window.addEventListener('message', handle_message, false);
       }).call(this);

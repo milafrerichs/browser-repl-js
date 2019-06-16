@@ -11,7 +11,7 @@
     "rollup-plugin-commonjs": "^9.3.4",
     "rollup-plugin-html": "^0.2.1",
     "rollup-plugin-livereload": "^1.0.0",
-    "rollup-plugin-node-resolve": "^4.2.3",
+    "rollup-plugin-node-resolve": "^5.0.3",
     "rollup-plugin-svelte": "^5.0.3",
     "rollup-plugin-terser": "^4.0.4",
     "sirv-cli": "^0.4.0",
@@ -23,6 +23,6 @@
     "dev": "run-p start:dev autobuild",
     "start": "sirv public",
     "start:dev": "sirv public --dev",
-		"srcdoc": "node scripts/build-srcdoc.js"
+    "srcdoc": "node scripts/build-srcdoc.js"
   }
 }

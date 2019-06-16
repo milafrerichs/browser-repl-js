@@ -1,16 +1,16 @@
 <script>
 	import Code from './Code.svelte';
 	import Viewer from './Viewer.svelte';
-	let code;
-	let message = "";
-	let iframe;
-	function handleSubmit() {
-		iframe.contentWindow.postMessage({ script: code }, '*');
+	import Editor from './Editor.svelte';
+
+	let code = '';
+	function changeCode(event) {
+		code = event.detail.value;
 	}
 </script>
 
 <style>
 </style>
 
-<Code bind:code={code} on:submit={handleSubmit}/>
-<Viewer bind:iframe={iframe} />
+<Editor mode="js" on:change={changeCode}/>
+<Viewer code={code} />
