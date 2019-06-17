@@ -5,7 +5,7 @@
 	export let injectedJS = '';
 	export let injectedCSS = '';
 	export let code = '';
-	let ready;
+	export let ready;
 	let message = '';
 	onMount(() => {
 		iframe.addEventListener('load', () => {

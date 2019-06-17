@@ -12,7 +12,7 @@
 	export let tab = true;
 	let w;
 	let h;
-	let code = '';
+	export let code = '';
 	let mode;
 	// We have to expose set and update methods, rather
 	// than making this state-driven through props,
