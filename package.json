@@ -23,6 +23,10 @@
     "dev": "run-p start:dev autobuild",
     "start": "sirv public",
     "start:dev": "sirv public --dev",
-    "srcdoc": "node scripts/build-srcdoc.js"
+    "srcdoc": "node scripts/build-srcdoc.js",
+    "codemirror": "cp node_modules/codemirror/lib/codemirror.js public/ && cp node_modules/codemirror/lib/codemirror.css public/ && cp node_modules/codemirror/mode/javascript/javascript.js public/ "
+  },
+  "dependencies": {
+    "codemirror": "^5.47.0",
   }
 }
