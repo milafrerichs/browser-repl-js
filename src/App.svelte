@@ -13,20 +13,23 @@
 	};
 	let code = '';
 	let ready = false;
+	let editor;
 	let completed = false;
 	function changeCode(event) {
 		code = event.detail.value;
 	}
 	$: if(ready) {
-		code = chapter.code
+		code = chapter.code;
 	}
 	function reset() {
 		completed = false;
 		code = chapter.code;
+		editor.update(code);
 	}
 	function complete() {
 		completed = true;
 		code = chapter.solution;
+		editor.update(code);
 	}
 </script>
 
@@ -39,7 +42,7 @@
 		{completed ? 'Reset' : 'Show me'}
 	</button>
 </div>
-<!-- Editor must habe the code as well -->
-<Editor mode="js" code={code} on:change={changeCode}/>
+<!-- Using the chapter.code here is a bit hacky, but update does not work in the ready watch, and setting the code earlier will cause the viewer to fail -->
+<Editor bind:this={editor} code={chapter.code} on:change={changeCode}/>
 <Viewer bind:ready code={code} />
 
