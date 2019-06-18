@@ -205,7 +205,7 @@
 
 <div class='codemirror-container' class:flex bind:offsetWidth={w} bind:offsetHeight={h}>
 	<textarea
-		tabindex='2'
+		tabindex='0'
 		bind:this={refs.editor}
 		readonly
 		value={code}

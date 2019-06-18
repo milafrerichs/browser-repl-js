@@ -16,6 +16,9 @@ jobs:
           - v1-dependencies-
       - run: npm install
       - run:
+          name: Compile iframe html
+          command: npm run srcdoc
+      - run:
           name: Build
           command: npm run build
       - save_cache:
