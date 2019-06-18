@@ -17,7 +17,7 @@ jobs:
       - run: npm install
       - run:
           name: Build
-          command: npm build
+          command: npm run build
       - save_cache:
           paths:
             - node_modules
@@ -39,7 +39,7 @@ jobs:
 
 workflows:
   version: 2
-  test-deploy:
+  build-deploy:
     jobs:
       - build:
           filters:
