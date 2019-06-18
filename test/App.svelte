@@ -4,14 +4,22 @@
 	let chapters = [
 		{
 			content: 'Test',
-			code: 'test',
-			solution: 'test'
+      code: 'document.body.innerHTML = "Test";',
+      solution: 'document.body.innerHTML = "Solution";'
 		},
 		{
-			content: 'Test 2'
+			content: 'Test 2',
+      code: 'document.body.innerHTML = "Test 2";',
+      solution: 'document.body.innerHTML = "Solution 2";'
 		}
 	]
+  let cssStyles = {
+    container: "container",
+    button: {
+      default: 'bla'
+    }
+  }
 </script>
 
-<Tutorials chapters={chapters} />
+<Tutorials {cssStyles} {chapters} />
 
