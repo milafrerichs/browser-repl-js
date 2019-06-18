@@ -21,12 +21,12 @@
   },
   "scripts": {
     "build": "rollup -c",
-		"autobuild": "rollup -c test/rollup.config.js -w",
-		"start:dev": "sirv test/public --dev -p 5001",
+    "autobuild": "rollup -c test/rollup.config.js -w",
+    "start:dev": "sirv test/public --dev -p 5001",
     "prepublishOnly": "npm run srcdoc && npm run build",
     "srcdoc": "node scripts/build-srcdoc.js",
-    "codemirror": "cp node_modules/codemirror/lib/codemirror.js public/ && cp node_modules/codemirror/lib/codemirror.css public/ && cp node_modules/codemirror/mode/javascript/javascript.js public/ ",
-		"local": "run-p start:dev autobuild"
+    "codemirror": "cp node_modules/codemirror/lib/codemirror.js test/public/ && cp node_modules/codemirror/lib/codemirror.css test/public/ && cp node_modules/codemirror/mode/javascript/javascript.js test/public/ ",
+    "local": "run-p start:dev autobuild"
   },
   "dependencies": {
     "codemirror": "^5.47.0"
