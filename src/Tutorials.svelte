@@ -7,6 +7,7 @@
 	let editor;
 	let completed = false;
 	let currentChapter = 0;
+  let manualUpdates = false
 	export let chapters = [];
   export let cssStyles = {
     container: 'container',
@@ -24,24 +25,29 @@
   };
 
 	function changeCode(event) {
+    manualUpdates = true
 		code = event.detail.value;
 	}
 	$: chapter = chapters[currentChapter];
 
-	$: if(ready) {
+	$: if(ready && !manualUpdates) {
 		code = completed ? chapter.solution : chapter.code;
 		editor.update(code);
 	}
 	function next() {
+    manualUpdates = false;
 		currentChapter++;
 	}
 	function prev() {
+    manualUpdates = false;
 		currentChapter--;
 	}
 	function reset() {
+    manualUpdates = false;
 		completed = false;
 	}
 	function complete() {
+    manualUpdates = false;
 		completed = true;
 	}
 </script>
@@ -73,10 +79,10 @@
   <div class="{cssStyles.resultContainer}">
   <!-- Using the chapter.code here is a bit hacky, but update does not work in the ready watch, and setting the code earlier will cause the viewer to fail -->
     <div class="{cssStyles.editor}">
-      <Editor bind:this={editor} code={chapter.code} on:change={changeCode}/>
+      <Editor bind:this={editor} on:change={changeCode}/>
     </div>
     <div class="{cssStyles.viewer}">
-      <Viewer bind:ready code={code} />
+      <Viewer bind:ready {code} />
     </div>
   </div>
 </div>
