@@ -5,7 +5,8 @@
 		{
 			content: 'Test',
       code: 'document.body.innerHTML = "Test";',
-      solution: 'document.body.innerHTML = "Solution";'
+      solution: 'document.body.innerHTML = "Solution";',
+      viewOnly: true
 		},
 		{
 			content: 'Test 2',

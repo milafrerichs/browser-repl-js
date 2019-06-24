@@ -33,14 +33,16 @@
 
   $: if(ready && !manualUpdates) {
     code = completed ? chapter.solution : chapter.code;
-    editor.update(code);
+    if(editor) editor.update(code);
   }
   function next() {
     manualUpdates = false;
+    completed = false;
     currentChapter++;
   }
   function prev() {
     manualUpdates = false;
+    completed = false;
     currentChapter--;
   }
   function reset() {
@@ -54,6 +56,9 @@
 </script>
 
 <style>
+  .hidden {
+    visibility: hidden;
+  }
 </style>
 
 <div class="{cssStyles.container}">
@@ -62,9 +67,11 @@
       {@html chapter.content}
     </div>
     <div class="{cssStyles.actions}">
-      <button class="{cssStyles.button.default} {cssStyles.button.show}" on:click="{() => completed ? reset() : complete()}">
-        {completed ? 'Reset' : 'Show me'}
-      </button>
+      {#if !chapter.viewOnly }
+        <button class="{cssStyles.button.default} {cssStyles.button.show}" on:click="{() => completed ? reset() : complete()}">
+          {completed ? 'Reset' : 'Show me'}
+        </button>
+      {/if}
       {#if currentChapter < (chapters.length-1) }
         <button class="{cssStyles.button.default} {cssStyles.button.next}" on:click="{() => next()}">
           Next
@@ -79,9 +86,11 @@
   </div>
   <div class="{cssStyles.resultContainer}">
   <!-- Using the chapter.code here is a bit hacky, but update does not work in the ready watch, and setting the code earlier will cause the viewer to fail -->
-    <div class="{cssStyles.editor}">
-      <Editor bind:this={editor} on:change={changeCode}/>
-    </div>
+    {#if !chapter.viewOnly }
+      <div class:hidden="{chapter.viewOnly}" class="{cssStyles.editor}">
+        <Editor bind:this={editor} on:change={changeCode}/>
+      </div>
+    {/if}
     <div class="{cssStyles.viewer}">
       <Viewer bind:ready {code} />
       <Console bind:ready output={code} />
