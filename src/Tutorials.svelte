@@ -1,6 +1,7 @@
 <script>
   import Viewer from './Viewer.svelte';
   import Editor from './Editor.svelte';
+  import Console from './Console.svelte';
 
   let code = '';
   let ready = false;
@@ -92,6 +93,7 @@
     {/if}
     <div class="{cssStyles.viewer}">
       <Viewer bind:ready {code} />
+      <Console bind:ready output={code} />
     </div>
   </div>
 </div>

@@ -11,7 +11,7 @@
 		{
 			content: 'Test 2',
       code: 'document.body.innerHTML = "Test 2";',
-      solution: 'document.body.innerHTML = "Solution 2";'
+      solution: 'document.body.innerHTML = "Solution 2";console.log("Test")'
 		}
 	]
   let cssStyles = {
