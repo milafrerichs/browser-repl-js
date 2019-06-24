@@ -1,14 +1,15 @@
 <script>
-	import Viewer from './Viewer.svelte';
-	import Editor from './Editor.svelte';
+  import Viewer from './Viewer.svelte';
+  import Editor from './Editor.svelte';
+  import Console from './Console.svelte';
 
-	let code = '';
-	let ready = false;
-	let editor;
-	let completed = false;
-	let currentChapter = 0;
+  let code = '';
+  let ready = false;
+  let editor;
+  let completed = false;
+  let currentChapter = 0;
   let manualUpdates = false
-	export let chapters = [];
+  export let chapters = [];
   export let cssStyles = {
     container: 'container',
     content: 'content',
@@ -24,32 +25,32 @@
     }
   };
 
-	function changeCode(event) {
+  function changeCode(event) {
     manualUpdates = true
-		code = event.detail.value;
-	}
-	$: chapter = chapters[currentChapter];
+    code = event.detail.value;
+  }
+  $: chapter = chapters[currentChapter];
 
-	$: if(ready && !manualUpdates) {
-		code = completed ? chapter.solution : chapter.code;
-		editor.update(code);
-	}
-	function next() {
+  $: if(ready && !manualUpdates) {
+    code = completed ? chapter.solution : chapter.code;
+    editor.update(code);
+  }
+  function next() {
     manualUpdates = false;
-		currentChapter++;
-	}
-	function prev() {
+    currentChapter++;
+  }
+  function prev() {
     manualUpdates = false;
-		currentChapter--;
-	}
-	function reset() {
+    currentChapter--;
+  }
+  function reset() {
     manualUpdates = false;
-		completed = false;
-	}
-	function complete() {
+    completed = false;
+  }
+  function complete() {
     manualUpdates = false;
-		completed = true;
-	}
+    completed = true;
+  }
 </script>
 
 <style>
@@ -83,6 +84,7 @@
     </div>
     <div class="{cssStyles.viewer}">
       <Viewer bind:ready {code} />
+      <Console bind:ready output={code} />
     </div>
   </div>
 </div>
