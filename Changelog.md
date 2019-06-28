@@ -1,3 +1,8 @@
+# v0.0.9
+## Added
+- Switcher between Result and Console
+- Add more classes and div markup for easier styling
+
 # v0.0.8
 ## Added
 - Console component; display only the ouput of `console.log` statements
