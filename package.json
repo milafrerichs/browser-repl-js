@@ -25,8 +25,12 @@
     "start:dev": "sirv test/public --dev -p 5001",
     "prepublishOnly": "npm run srcdoc && npm run build",
     "srcdoc": "node scripts/build-srcdoc.js",
-    "codemirror": "cp node_modules/codemirror/lib/codemirror.js test/public/ && cp node_modules/codemirror/lib/codemirror.css test/public/ && cp node_modules/codemirror/mode/javascript/javascript.js test/public/ ",
-    "local": "run-p start:dev autobuild"
+    "codemirror:js": "cp node_modules/codemirror/lib/codemirror.js test/public/codemirror.js",
+    "codemirror:css": "cp node_modules/codemirror/lib/codemirror.css test/public/codemirror.css ",
+    "codemirror:highlight": "cp node_modules/codemirror/mode/javascript/javascript.js test/public/javascript.js",
+    "copy": "npm run codemirror:js && npm run codemirror:css && npm run codemirror:highlight",
+    "local": "run-p start:dev autobuild",
+    "now-build": "npm run copy && npm run srcdoc && rollup -c test/rollup.config.js"
   },
   "dependencies": {
     "codemirror": "^5.47.0"
