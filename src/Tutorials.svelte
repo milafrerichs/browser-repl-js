@@ -46,11 +46,13 @@
   function next() {
     manualUpdates = false;
     completed = false;
+    tab = 'viewer';
     currentChapter++;
   }
   function prev() {
     manualUpdates = false;
     completed = false;
+    tab = 'viewer';
     currentChapter--;
   }
   function reset() {
@@ -104,13 +106,13 @@
         <Editor bind:this={editor} on:change={changeCode}/>
       </div>
     {/if}
-    <div class="{cssStyles.viewerContainer}">
+    <div class:view-only="{chapter.viewOnly}" class="{cssStyles.viewerContainer}">
       <div class="{cssStyles.viewerActions.container}">
         <div class="{cssStyles.viewerActions.tabItem}">
-          <a class="{cssStyles.viewerActions.link}" on:click="{() => showResult()}">Result</a>
+          <a class:active="{tab == 'viewer'}" class="{cssStyles.viewerActions.link}" on:click="{() => showResult()}">Result</a>
         </div>
         <div class="{cssStyles.viewerActions.tabItem}">
-          <a class="{cssStyles.viewerActions.link}" on:click="{() => showConsole()}">Console</a>
+          <a class:active="{tab == 'console'}" class="{cssStyles.viewerActions.link}" on:click="{() => showConsole()}">Console</a>
         </div>
       </div>
       <div class="{cssStyles.viewerConsoleContainer}">
