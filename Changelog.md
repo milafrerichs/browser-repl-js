@@ -1,3 +1,8 @@
+# v0.0.10
+## Added
+- active state for the switcher
+- view-only class when only the view screen is visible
+
 # v0.0.9
 ## Added
 - Switcher between Result and Console
