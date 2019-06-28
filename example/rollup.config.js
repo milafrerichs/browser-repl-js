@@ -8,12 +8,12 @@ import { terser } from 'rollup-plugin-terser';
 const production = !process.env.ROLLUP_WATCH;
 
 export default {
-	input: './test/main.js',
+	input: './example/main.js',
   output: {
 		name: 'app',
 		format: 'iife',
 		sourcemap: true,
-		file: './test/public/main.js',
+		file: './example/public/main.js',
 
 	},
 	plugins: [
@@ -23,7 +23,7 @@ export default {
 			// we'll extract any component CSS out into
 			// a separate file — better for performance
 			css: css => {
-				css.write('test/public/bundle.css');
+				css.write('example/public/bundle.css');
 			}
 		}),
 

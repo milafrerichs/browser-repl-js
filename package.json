@@ -21,16 +21,16 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "autobuild": "rollup -c test/rollup.config.js -w",
-    "start:dev": "sirv test/public --dev -p 5001",
+    "autobuild": "rollup -c example/rollup.config.js -w",
+    "start:dev": "sirv example/public --dev -p 5001",
     "prepublishOnly": "npm run srcdoc && npm run build",
     "srcdoc": "node scripts/build-srcdoc.js",
-    "codemirror:js": "cp node_modules/codemirror/lib/codemirror.js test/public/codemirror.js",
-    "codemirror:css": "cp node_modules/codemirror/lib/codemirror.css test/public/codemirror.css ",
-    "codemirror:highlight": "cp node_modules/codemirror/mode/javascript/javascript.js test/public/javascript.js",
+    "codemirror:js": "cp node_modules/codemirror/lib/codemirror.js example/public/codemirror.js",
+    "codemirror:css": "cp node_modules/codemirror/lib/codemirror.css example/public/codemirror.css ",
+    "codemirror:highlight": "cp node_modules/codemirror/mode/javascript/javascript.js example/public/javascript.js",
     "copy": "npm run codemirror:js && npm run codemirror:css && npm run codemirror:highlight",
     "local": "run-p start:dev autobuild",
-    "now-build": "npm run copy && npm run srcdoc && rollup -c test/rollup.config.js"
+    "now-build": "npm run copy && npm run srcdoc && rollup -c example/rollup.config.js"
   },
   "dependencies": {
     "codemirror": "^5.47.0"

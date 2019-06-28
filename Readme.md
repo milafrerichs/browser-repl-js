@@ -12,3 +12,5 @@ That's why I built the prototype in a day to test it out.
 
 ### Example how it looks like
 ![](docs/example.png)
+
+
