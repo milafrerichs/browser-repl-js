@@ -8,7 +8,8 @@
   let editor;
   let completed = false;
   let currentChapter = 0;
-  let manualUpdates = false
+  let manualUpdates = false;
+  let tab = 'view';
   export let chapters = [];
   export let cssStyles = {
     container: 'container',
@@ -91,9 +92,23 @@
         <Editor bind:this={editor} on:change={changeCode}/>
       </div>
     {/if}
-    <div class="{cssStyles.viewer}">
+    <div class="{cssStyles.viewerContainer}">
+      <div class="{cssStyles.viewerActions}">
+      	<ul class="list-reset flex border-b">
+  <li class="-mb-px mr-1">
+    <a class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-dark font-semibold" on:click="{() => showResult()}" href="#">result</a>
+  </li>
+  <li class="mr-1">
+    <a class="bg-white inline-block py-2 px-4 text-blue hover:text-blue-darker font-semibold" on:click="{() => showConsole()}" href="#">Console</a>
+  </li>
+</ul>
+</div>
+	<div class:hidden="{tab != 'viewer'}" class="{cssStyles.viewer}">
       <Viewer bind:ready {code} />
+      </div>
+  	<div class:hidden="{tab != 'console'}" class="{cssStyles.console}">
       <Console bind:ready output={code} />
+      </div>
     </div>
   </div>
 </div>
