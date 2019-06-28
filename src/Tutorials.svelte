@@ -8,13 +8,21 @@
   let editor;
   let completed = false;
   let currentChapter = 0;
-  let manualUpdates = false
+  let manualUpdates = false;
+  let tab = 'viewer';
   export let chapters = [];
   export let cssStyles = {
     container: 'container',
     content: 'content',
     contentContainer: 'content-actions-container',
     resultContainer: 'result-container',
+    viewerContainer: 'viewer-container',
+    viewerConsoleContainer: 'viewer-console-container',
+    viewerActions: {
+      container: '',
+      tabItem: '',
+      link: ''
+    },
     editor: 'editor',
     viewer: 'viewer',
     actions: 'actions',
@@ -53,6 +61,12 @@
     manualUpdates = false;
     completed = true;
   }
+  function showConsole() {
+    tab = 'console';
+  }
+  function showResult() {
+    tab = 'viewer';
+  }
 </script>
 
 <style>
@@ -85,15 +99,28 @@
     </div>
   </div>
   <div class="{cssStyles.resultContainer}">
-  <!-- Using the chapter.code here is a bit hacky, but update does not work in the ready watch, and setting the code earlier will cause the viewer to fail -->
     {#if !chapter.viewOnly }
       <div class:hidden="{chapter.viewOnly}" class="{cssStyles.editor}">
         <Editor bind:this={editor} on:change={changeCode}/>
       </div>
     {/if}
-    <div class="{cssStyles.viewer}">
-      <Viewer bind:ready {code} />
-      <Console bind:ready output={code} />
+    <div class="{cssStyles.viewerContainer}">
+      <div class="{cssStyles.viewerActions.container}">
+        <div class="{cssStyles.viewerActions.tabItem}">
+          <a class="{cssStyles.viewerActions.link}" on:click="{() => showResult()}">Result</a>
+        </div>
+        <div class="{cssStyles.viewerActions.tabItem}">
+          <a class="{cssStyles.viewerActions.link}" on:click="{() => showConsole()}">Console</a>
+        </div>
+      </div>
+      <div class="{cssStyles.viewerConsoleContainer}">
+        <div class:hidden="{tab != 'viewer'}" class="{cssStyles.viewer}">
+          <Viewer bind:ready {code} />
+        </div>
+        <div class:hidden="{tab != 'console'}" class="{cssStyles.console}">
+          <Console bind:ready output={code} />
+        </div>
+      </div>
     </div>
   </div>
 </div>
