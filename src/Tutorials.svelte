@@ -9,13 +9,20 @@
   let completed = false;
   let currentChapter = 0;
   let manualUpdates = false;
-  let tab = 'view';
+  let tab = 'viewer';
   export let chapters = [];
   export let cssStyles = {
     container: 'container',
     content: 'content',
     contentContainer: 'content-actions-container',
     resultContainer: 'result-container',
+    viewerContainer: 'viewer-container',
+    viewerConsoleContainer: 'viewer-console-container',
+    viewerActions: {
+      container: '',
+      tabItem: '',
+      link: ''
+    },
     editor: 'editor',
     viewer: 'viewer',
     actions: 'actions',
@@ -54,6 +61,12 @@
     manualUpdates = false;
     completed = true;
   }
+  function showConsole() {
+    tab = 'console';
+  }
+  function showResult() {
+    tab = 'viewer';
+  }
 </script>
 
 <style>
@@ -86,28 +99,27 @@
     </div>
   </div>
   <div class="{cssStyles.resultContainer}">
-  <!-- Using the chapter.code here is a bit hacky, but update does not work in the ready watch, and setting the code earlier will cause the viewer to fail -->
     {#if !chapter.viewOnly }
       <div class:hidden="{chapter.viewOnly}" class="{cssStyles.editor}">
         <Editor bind:this={editor} on:change={changeCode}/>
       </div>
     {/if}
     <div class="{cssStyles.viewerContainer}">
-      <div class="{cssStyles.viewerActions}">
-      	<ul class="list-reset flex border-b">
-  <li class="-mb-px mr-1">
-    <a class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-dark font-semibold" on:click="{() => showResult()}" href="#">result</a>
-  </li>
-  <li class="mr-1">
-    <a class="bg-white inline-block py-2 px-4 text-blue hover:text-blue-darker font-semibold" on:click="{() => showConsole()}" href="#">Console</a>
-  </li>
-</ul>
-</div>
-	<div class:hidden="{tab != 'viewer'}" class="{cssStyles.viewer}">
-      <Viewer bind:ready {code} />
+      <div class="{cssStyles.viewerActions.container}">
+        <div class="{cssStyles.viewerActions.tabItem}">
+          <a class="{cssStyles.viewerActions.link}" on:click="{() => showResult()}">Result</a>
+        </div>
+        <div class="{cssStyles.viewerActions.tabItem}">
+          <a class="{cssStyles.viewerActions.link}" on:click="{() => showConsole()}">Console</a>
+        </div>
       </div>
-  	<div class:hidden="{tab != 'console'}" class="{cssStyles.console}">
-      <Console bind:ready output={code} />
+      <div class="{cssStyles.viewerConsoleContainer}">
+        <div class:hidden="{tab != 'viewer'}" class="{cssStyles.viewer}">
+          <Viewer bind:ready {code} />
+        </div>
+        <div class:hidden="{tab != 'console'}" class="{cssStyles.console}">
+          <Console bind:ready output={code} />
+        </div>
       </div>
     </div>
   </div>

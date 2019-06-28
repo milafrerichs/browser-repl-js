@@ -18,6 +18,12 @@
     container: "container",
     button: {
       default: 'bla'
+    },
+    viewerContainer: 'viewer-container',
+    viewerActions: {
+      tabItem: '',
+    },
+    viewerViews: {
     }
   }
 </script>
