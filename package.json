@@ -2,7 +2,7 @@
   "name": "svelte-javascript-tutorials",
   "svelte": "src/Tutorials.svelte",
   "module": "index.mjs",
-  "version": "0.0.10",
+  "version": "0.1.1",
   "description": "",
   "main": "index.js",
   "author": "Mila Frerichs <mila.frerichs@gmail.com>",
@@ -29,7 +29,7 @@
     "codemirror:css": "cp node_modules/codemirror/lib/codemirror.css example/public/codemirror.css ",
     "codemirror:highlight": "cp node_modules/codemirror/mode/javascript/javascript.js example/public/javascript.js",
     "copy": "npm run codemirror:js && npm run codemirror:css && npm run codemirror:highlight",
-    "local": "run-p start:dev autobuild",
+    "start": "run-p copy start:dev autobuild",
     "now-build": "npm run copy && npm run srcdoc && rollup -c example/rollup.config.js"
   },
   "dependencies": {

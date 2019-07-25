@@ -32,12 +32,14 @@
 	import Tutorials from '../src/Tutorials.svelte';
 	let chapters = [
 		{
+      title: 'Entry',
 			content: 'Test',
       code: 'document.body.innerHTML = "Test";',
       solution: 'document.body.innerHTML = "Solution";',
       viewOnly: true
 		},
 		{
+      title: '1: Test',
 			content: 'Test 2',
       code: 'document.body.innerHTML = "Test 2";',
       solution: 'document.body.innerHTML = "Solution 2";console.log("Test")'
