@@ -34,8 +34,10 @@
 		{
       title: 'Entry',
 			content: 'Test',
-      code: 'document.body.innerHTML = "Test";',
+      code: '',
+      codeHtml: 'test',
       solution: 'document.body.innerHTML = "Solution";',
+      solutionHtml: '<h1>Soltuion</h1>',
       viewOnly: true
 		},
 		{
@@ -70,5 +72,5 @@
 
 </script>
 
-<Tutorials {cssStyles} {chapters} />
+<Tutorials {chapters} />
 

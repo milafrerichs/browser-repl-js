@@ -4,6 +4,7 @@
   import Console from './Console.svelte';
 
   let code = '';
+  let html = '';
   let ready = false;
   let editor;
   let completed = false;
@@ -11,8 +12,11 @@
   let manualUpdates = false;
   let toggleText = '';
   let tab = 'viewer';
+  let editorTab = 'js';
   let contentVisible = true;
   export let chapters = [];
+  export let injectedLibraries = [];
+  export let injectedJS = '';
   export let cssStyles = {
     container: 'container',
     content: 'content',
@@ -32,6 +36,11 @@
       container: 'progress',
       chapter: 'progress-chapter'
     },
+    editorActions: {
+      container: '',
+      tabItem: '',
+      link: ''
+    },
     viewerActions: {
       container: '',
       tabItem: '',
@@ -50,13 +59,33 @@
 
   function changeCode(event) {
     manualUpdates = true
-    code = event.detail.value;
+    if (editorTab === 'js') {
+      code = event.detail.value;
+    } else {
+      html = event.detail.value;
+    }
   }
   $: chapter = chapters[currentChapter];
 
   $: if(ready && !manualUpdates) {
     code = completed ? chapter.solution : chapter.code;
-    if(editor) editor.update(code);
+    html = completed ? chapter.solutionHtml : chapter.codeHtml;
+    if(!html) html = '';
+    if(editor) {
+      if (editorTab === 'js') {
+        editor.update(code);
+      } else {
+        editor.update(html);
+      }
+    }
+  }
+  function showHTML() {
+    editorTab = 'html';
+    editor.update(html);
+  }
+  function showJS() {
+    editorTab = 'js';
+    editor.update(code);
   }
   function next() {
     manualUpdates = false;
@@ -154,6 +183,14 @@
   <div class="result-container {cssStyles.resultContainer}">
     {#if !chapter.viewOnly }
       <div class:hidden="{chapter.viewOnly}" class="{cssStyles.editor}">
+        <div class="{cssStyles.editorActions.container}">
+          <div class="{cssStyles.editorActions.tabItem}">
+            <a class:active="{editorTab == 'js'}" class="{cssStyles.editorActions.link}" on:click="{() => showJS()}">index.js</a>
+          </div>
+          <div class="{cssStyles.editorActions.tabItem}">
+            <a class:active="{editorTab == 'html'}" class="{cssStyles.editorActions.link}" on:click="{() => showHTML()}">index.html</a>
+          </div>
+        </div>
         <Editor bind:this={editor} on:change={changeCode}/>
       </div>
     {/if}
@@ -168,7 +205,7 @@
       </div>
       <div class="{cssStyles.viewerConsoleContainer}">
         <div class:hidden="{tab != 'viewer'}" class="{cssStyles.viewer}">
-          <Viewer bind:ready {code} />
+          <Viewer bind:ready {code} {injectedLibraries} {html} {injectedJS} />
         </div>
         <div class:hidden="{tab != 'console'}" class="{cssStyles.console}">
           <Console bind:ready output={code} />
