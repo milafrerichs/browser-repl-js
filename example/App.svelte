@@ -29,7 +29,7 @@
   }
 </style>
 <script>
-	import Tutorials from '../src/Tutorials.svelte';
+	import Repl from '../src/Repl.svelte';
 	let chapters = [
 		{
       title: 'Entry',
@@ -69,8 +69,20 @@
 			prev: 'prev'
     }
   }
+  let files = [
+    {
+      name: 'index.html',
+      content: '<h1>Test</h1>',
+      type: 'html'
+    },
+    {
+      name: 'index.js',
+      content: '',
+      type: 'js'
+    }
+  ];
 
 </script>
 
-<Tutorials {chapters} />
+<Repl {files} />
 
