@@ -1,8 +1,8 @@
 {
-  "name": "svelte-javascript-tutorials",
-  "svelte": "src/Tutorials.svelte",
+  "name": "javascript-repl",
+  "svelte": "src/Repl.svelte",
   "module": "index.mjs",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "",
   "main": "index.js",
   "author": "Mila Frerichs <mila.frerichs@gmail.com>",
