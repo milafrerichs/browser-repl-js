@@ -3,39 +3,24 @@
   import Editor from './Editor.svelte';
   import Console from './Console.svelte';
 
-  let code = '';
-  let html = '';
   let ready = false;
   let editor;
-  let completed = false;
-  let currentChapter = 0;
   let manualUpdates = false;
-  let toggleText = '';
   let tab = 'viewer';
-  let editorTab = 'js';
-  let contentVisible = true;
-  export let chapters = [];
+  let currentFile = {};
+  let currentFileIndex = 0;
+  let currentContent = '';
+  let code = '';
+  let html = '';
+  export let viewOnly = false;
+  export let files = [];
   export let injectedLibraries = [];
   export let injectedJS = '';
   export let cssStyles = {
     container: 'container',
-    content: 'content',
-    contentContainer: 'content-actions-container',
     resultContainer: 'result-container',
-    progressContainer: 'progress-container',
     viewerContainer: 'viewer-container',
     viewerConsoleContainer: 'viewer-console-container',
-    toggleContentContainer: 'toggle-content-container',
-    chaptersContainer: 'chapters-container',
-    chapters: {
-      current: 'current-chapter',
-      chapters: 'chapters',
-      chapter: 'chapters-chapter'
-    },
-    progress: {
-      container: 'progress',
-      chapter: 'progress-chapter'
-    },
     editorActions: {
       container: '',
       tabItem: '',
@@ -48,73 +33,51 @@
     },
     editor: 'editor',
     viewer: 'viewer',
-    actions: 'actions',
-    button: {
-      show: 'show',
-      next: 'next',
-      prev: 'prev',
-      toggle: 'toggle'
-    }
   };
 
   function changeCode(event) {
-    manualUpdates = true
-    if (editorTab === 'js') {
-      code = event.detail.value;
+    currentContent = event.detail.value;
+    manualUpdates = true;
+    if (currentFile.type === 'js') {
+      code = currentContent;
     } else {
-      html = event.detail.value;
+      html = currentContent.replace(/\n/g,'');
     }
   }
-  $: chapter = chapters[currentChapter];
+
+
+  function getContentForType(type = 'js') {
+    return files.reduce((content, file) => {
+      if(file.type === type) {
+        return content + file.content;
+      }
+      return content;
+    }, '');
+  }
+
+  $: currentFile = files[currentFileIndex]
+
+  $: if(editor && currentFile) {
+    editor.update(currentFile.content);
+  }
 
   $: if(ready && !manualUpdates) {
-    code = completed ? chapter.solution : chapter.code;
-    html = completed ? chapter.solutionHtml : chapter.codeHtml;
+    code = getContentForType('js')
+    html = getContentForType('html')
     if(!html) html = '';
     if(editor) {
-      if (editorTab === 'js') {
-        editor.update(code);
-      } else {
-        editor.update(html);
-      }
+      editor.update(currentFile.content);
     }
   }
-  function showHTML() {
-    editorTab = 'html';
-    editor.update(html);
-  }
-  function showJS() {
-    editorTab = 'js';
-    editor.update(code);
-  }
-  function next() {
-    manualUpdates = false;
-    completed = false;
-    tab = 'viewer';
-    currentChapter++;
-  }
-  function prev() {
-    manualUpdates = false;
-    completed = false;
-    tab = 'viewer';
-    currentChapter--;
-  }
-  function reset() {
-    manualUpdates = false;
-    completed = false;
-  }
-  function complete() {
-    manualUpdates = false;
-    completed = true;
+  function showFile(fileIndex) {
+    currentFile.content = currentContent;
+    currentFileIndex = fileIndex;
   }
   function showConsole() {
     tab = 'console';
   }
   function showResult() {
     tab = 'viewer';
-  }
-  function toggleContent() {
-    contentVisible = !contentVisible;
   }
 </script>
 
@@ -136,65 +99,21 @@
   }
 </style>
 
-<div class="{cssStyles.container}" class:hide-content="{!contentVisible}">
-  <div class="{cssStyles.chaptersContainer}">
-    <div class="{cssStyles.chapters.current}">{chapter.title}</div>
-    <div class="{cssStyles.chapters.chapters}">
-      {#if currentChapter > 0 }
-        <button class="{cssStyles.button.default} {cssStyles.button.prev}" on:click="{() => prev()}">
-          Previous
-        </button>
-      {/if}
-      {#each chapters as c, i}
-        <div class="{cssStyles.chapters.chapter}" on:click="{() => currentChapter = i}"class:active="{i == currentChapter}">{c.title}</div>
-      {/each}
-      {#if currentChapter < (chapters.length-1) }
-        <button class="{cssStyles.button.default} {cssStyles.button.next}" on:click="{() => next()}">
-          Next
-        </button>
-      {/if}
-    </div>
-  </div>
-  <div class="content-container {cssStyles.contentContainer}">
-    <div class="{cssStyles.content}">
-      {@html chapter.content}
-    </div>
-    <div class="{cssStyles.actions}">
-      {#if !chapter.viewOnly }
-        <button class="{cssStyles.button.default} {cssStyles.button.show}" on:click="{() => completed ? reset() : complete()}">
-          {completed ? 'Reset' : 'Show me'}
-        </button>
-      {/if}
-      {#if currentChapter < (chapters.length-1) }
-        <button class="{cssStyles.button.default} {cssStyles.button.next}" on:click="{() => next()}">
-          Next
-        </button>
-      {/if}
-      {#if currentChapter > 0 }
-        <button class="{cssStyles.button.default} {cssStyles.button.prev}" on:click="{() => prev()}">
-          Previous
-        </button>
-      {/if}
-    </div>
-  </div>
-  <div class="{cssStyles.toggleContentContainer}">
-    <button class="{cssStyles.button.default} {cssStyles.button.toggle}" on:click="{() => toggleContent()}">{toggleText}</button>
-  </div>
+<div class="{cssStyles.container}" >
   <div class="result-container {cssStyles.resultContainer}">
-    {#if !chapter.viewOnly }
-      <div class:hidden="{chapter.viewOnly}" class="{cssStyles.editor}">
+    {#if !viewOnly }
+      <div class:hidden="{viewOnly}" class="{cssStyles.editor}">
         <div class="{cssStyles.editorActions.container}">
-          <div class="{cssStyles.editorActions.tabItem}">
-            <a class:active="{editorTab == 'js'}" class="{cssStyles.editorActions.link}" on:click="{() => showJS()}">index.js</a>
-          </div>
-          <div class="{cssStyles.editorActions.tabItem}">
-            <a class:active="{editorTab == 'html'}" class="{cssStyles.editorActions.link}" on:click="{() => showHTML()}">index.html</a>
-          </div>
+          {#each files as { name }, i}
+            <div class="{cssStyles.editorActions.tabItem}">
+              <a class:active="{currentFileIndex == i}" class="{cssStyles.editorActions.link}" on:click="{() => showFile(i)}">{name}</a>
+            </div>
+          {/each}
         </div>
         <Editor bind:this={editor} on:change={changeCode}/>
       </div>
     {/if}
-    <div class:view-only="{chapter.viewOnly}" class="{cssStyles.viewerContainer}">
+    <div class:view-only="{viewOnly}" class="{cssStyles.viewerContainer}">
       <div class="{cssStyles.viewerActions.container}">
         <div class="{cssStyles.viewerActions.tabItem}">
           <a class:active="{tab == 'viewer'}" class="{cssStyles.viewerActions.link}" on:click="{() => showResult()}">Result</a>
@@ -211,13 +130,6 @@
           <Console bind:ready output={code} />
         </div>
       </div>
-    </div>
-  </div>
-  <div class="{cssStyles.progressContainer}">
-    <div class="{cssStyles.progress.container}">
-      {#each chapters as c, i}
-        <div class="{cssStyles.progress.chapter}" class:active="{i == currentChapter}"></div>
-      {/each}
     </div>
   </div>
 </div>
