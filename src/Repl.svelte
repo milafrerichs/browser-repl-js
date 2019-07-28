@@ -55,19 +55,31 @@
     }, '');
   }
 
+  function update() {
+    code = getContentForType('js') || '';
+    html = getContentForType('html') || '';
+    if(!html) html = '';
+    if(editor) {
+      editor.update(currentFile.content);
+    }
+
+  }
+
   $: currentFile = files[currentFileIndex]
 
   $: if(editor && currentFile) {
     editor.update(currentFile.content);
   }
 
+  $: if(files && ready) {
+    manualUpdates = false;
+    currentFileIndex = 0;
+    currentFile = files[currentFileIndex];
+    update();
+  }
+
   $: if(ready && !manualUpdates) {
-    code = getContentForType('js')
-    html = getContentForType('html')
-    if(!html) html = '';
-    if(editor) {
-      editor.update(currentFile.content);
-    }
+    update();
   }
   function showFile(fileIndex) {
     currentFile.content = currentContent;
