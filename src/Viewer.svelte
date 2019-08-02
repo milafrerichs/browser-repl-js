@@ -7,14 +7,14 @@
   export let injectedLibraries = [];
   export let html = '';
 	export let code = '';
-	export let ready;
+	export let ready = false;
 	let message = '';
 	onMount(() => {
 		iframe.addEventListener('load', () => {
 			ready = true;
 		});
 	});
-	$: if(code || html) {
+	$: if(ready && (code || html)) {
 		message = `
     ${injectedJS}
     ${styles}
