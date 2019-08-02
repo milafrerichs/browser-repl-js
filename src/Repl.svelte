@@ -136,10 +136,10 @@
       </div>
       <div class="{cssStyles.viewerConsoleContainer}">
         <div class:hidden="{tab != 'viewer'}" class="{cssStyles.viewer}">
-          <Viewer bind:ready {code} {injectedLibraries} {html} {injectedJS} />
+          <Viewer bind:ready={ready} {code} {injectedLibraries} {html} {injectedJS} />
         </div>
         <div class:hidden="{tab != 'console'}" class="{cssStyles.console}">
-          <Console bind:ready output={code} />
+          <Console output={code} />
         </div>
       </div>
     </div>
