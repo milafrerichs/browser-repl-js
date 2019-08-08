@@ -73,7 +73,6 @@
 
   $: if(files && ready) {
     manualUpdates = false;
-    currentFileIndex = 0;
     currentFile = files[currentFileIndex];
     update();
   }
