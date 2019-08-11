@@ -39,7 +39,6 @@
 
   const debounce = (func, delay) => {
     let inDebounce
-    debugger
     return function() {
       const context = this
       const args = arguments
