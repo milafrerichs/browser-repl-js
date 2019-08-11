@@ -13,9 +13,11 @@
   let code = '';
   let html = '';
   export let viewOnly = false;
+  export let changedCode = () => {};
   export let files = [];
   export let injectedLibraries = [];
   export let injectedJS = '';
+  export let debounceTime = 300;
   export let cssStyles = {
     container: 'container',
     resultContainer: 'result-container',
@@ -35,9 +37,25 @@
     viewer: 'viewer',
   };
 
+  const debounce = (func, delay) => {
+    let inDebounce
+    debugger
+    return function() {
+      const context = this
+      const args = arguments
+      clearTimeout(inDebounce)
+      inDebounce = setTimeout(() =>
+        func.apply(context, args)
+      , delay)
+    }
+  }
+
+  const debounceChangeCode = debounce(changeCode, debounceTime);
+
   function changeCode(event) {
     currentContent = event.detail.value;
     manualUpdates = true;
+    changedCode();
     if (currentFile.type === 'js') {
       code = currentContent;
     } else {
@@ -121,7 +139,7 @@
             </div>
           {/each}
         </div>
-        <Editor bind:this={editor} on:change={changeCode}/>
+        <Editor bind:this={editor} on:change={debounceChangeCode}/>
       </div>
     {/if}
     <div class:view-only="{viewOnly}" class="{cssStyles.viewerContainer}">

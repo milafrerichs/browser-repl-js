@@ -2,7 +2,7 @@
   "name": "javascript-repl",
   "svelte": "src/Repl.svelte",
   "module": "index.mjs",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "",
   "main": "index.js",
   "author": "Mila Frerichs <mila.frerichs@gmail.com>",
