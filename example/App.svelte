@@ -81,6 +81,9 @@
       type: 'js'
     }
   ];
+  function changedCode() {
+    console.log('changed the code')
+  }
 
 </script>
 
