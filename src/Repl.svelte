@@ -12,7 +12,7 @@
   let currentContent = '';
   let code = '';
   let html = '';
-  export let viewOnly = false;
+  export let mode = 'normal';
   export let changedCode = () => {};
   export let files = [];
   export let injectedLibraries = [];
@@ -82,6 +82,10 @@
 
   }
 
+  $: showEditor = (mode === 'normal' || mode === 'minimal')
+  $: showTabs = (mode === 'normal' || mode === 'view')
+  $: showFiles = (mode === 'normal' || mode === 'view')
+
   $: currentFile = files[currentFileIndex]
 
   $: if(editor && currentFile) {
@@ -129,27 +133,31 @@
 
 <div class="{cssStyles.container}" >
   <div class="result-container {cssStyles.resultContainer}">
-    {#if !viewOnly }
-      <div class:hidden="{viewOnly}" class="{cssStyles.editor}">
-        <div class="{cssStyles.editorActions.container}">
-          {#each files as { name }, i}
-            <div class="{cssStyles.editorActions.tabItem}">
-              <a class:active="{currentFileIndex == i}" class="{cssStyles.editorActions.link}" on:click="{() => showFile(i)}">{name}</a>
-            </div>
-          {/each}
-        </div>
+    {#if showEditor}
+      <div class:hidden="{!showEditor}" class="{cssStyles.editor}">
+        {#if showFiles}
+          <div class="{cssStyles.editorActions.container}">
+            {#each files as { name }, i}
+              <div class="{cssStyles.editorActions.tabItem}">
+                <a class:active="{currentFileIndex == i}" class="{cssStyles.editorActions.link}" on:click="{() => showFile(i)}">{name}</a>
+              </div>
+            {/each}
+          </div>
+        {/if}
         <Editor bind:this={editor} on:change={debounceChangeCode}/>
       </div>
     {/if}
-    <div class:view-only="{viewOnly}" class="{cssStyles.viewerContainer}">
-      <div class="{cssStyles.viewerActions.container}">
-        <div class="{cssStyles.viewerActions.tabItem}">
-          <a class:active="{tab == 'viewer'}" class="{cssStyles.viewerActions.link}" on:click="{() => showResult()}">Result</a>
+    <div class:view-only="{!showEditor}" class="{cssStyles.viewerContainer}">
+      {#if showTabs}
+        <div class="{cssStyles.viewerActions.container}">
+          <div class="{cssStyles.viewerActions.tabItem}">
+            <a class:active="{tab == 'viewer'}" class="{cssStyles.viewerActions.link}" on:click="{() => showResult()}">Result</a>
+          </div>
+          <div class="{cssStyles.viewerActions.tabItem}">
+            <a class:active="{tab == 'console'}" class="{cssStyles.viewerActions.link}" on:click="{() => showConsole()}">Console</a>
+          </div>
         </div>
-        <div class="{cssStyles.viewerActions.tabItem}">
-          <a class:active="{tab == 'console'}" class="{cssStyles.viewerActions.link}" on:click="{() => showConsole()}">Console</a>
-        </div>
-      </div>
+    {/if}
       <div class="{cssStyles.viewerConsoleContainer}">
         <div class:hidden="{tab != 'viewer'}" class="{cssStyles.viewer}">
           <Viewer bind:ready={ready} {code} {injectedLibraries} {html} {injectedJS} />

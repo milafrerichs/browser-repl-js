@@ -1,3 +1,11 @@
+# v0.3.0
+## Added
+New `mode` prop
+previous `viewOnly` can now be replicated using `view` mode
+
+## Removed
+- viewOnly prop is remove
+
 # v0.0.10
 ## Added
 - active state for the switcher

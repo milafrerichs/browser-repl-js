@@ -10,6 +10,17 @@ I tried observable which is great for d3 and you can for the code and try it out
 That's why I built the prototype in a day to test it out. 
 
 
+## Usage outside a svelte app
+
+```
+new JavascriptRepl({
+  target: document.querySelector('#code-example'),
+  props: {
+    files: [{name: 'index.js', content: code, type: 'js' }]
+  }
+});
+```
+
 ### Example how it looks like
 ![](docs/example.png)
 
