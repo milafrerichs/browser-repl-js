@@ -3,15 +3,33 @@
   import Editor from './Editor.svelte';
   import Console from './Console.svelte';
 
-  let ready = false;
+  import {
+    code as code_store,
+    html as html_store,
+    ready as ready_store
+  } from './stores.js'
+
   let editor;
   let manualUpdates = false;
   let tab = 'viewer';
   let currentFile = {};
   let currentFileIndex = 0;
   let currentContent = '';
-  let code = '';
+
+  let code;
   let html = '';
+  let ready = false;
+
+  const unsubscribe_code = code_store.subscribe(value => {
+    code = value;
+  });
+  const unsubscribe_html = code_store.subscribe(html => {
+    html = value;
+  });
+  const unsubscribe_ready = ready_store.subscribe(value => {
+    ready = value;
+  });
+  
   export let mode = 'normal';
   export let changedCode = () => {};
   export let files = [];
@@ -56,9 +74,9 @@
     manualUpdates = true;
     changedCode();
     if (currentFile.type === 'js') {
-      code = currentContent;
+      code_store.set(currentContent);
     } else {
-      html = currentContent.replace(/\n/g,'');
+      html_store.set(currentContent.replace(/\n/g,''));
     }
   }
 
@@ -73,8 +91,8 @@
   }
 
   function update() {
-    code = getContentForType('js') || '';
-    html = getContentForType('html') || '';
+    code_store.set(getContentForType('js') || '');
+    html_store.set(getContentForType('html') || '');
     if(!html) html = '';
     if(editor) {
       editor.update(currentFile.content);
@@ -160,7 +178,7 @@
     {/if}
       <div class="{cssStyles.viewerConsoleContainer}">
         <div class:hidden="{tab != 'viewer'}" class="{cssStyles.viewer}">
-          <Viewer bind:ready={ready} {code} {injectedLibraries} {html} {injectedJS} />
+          <Viewer {injectedLibraries} {injectedJS} />
         </div>
         <div class:hidden="{tab != 'console'}" class="{cssStyles.console}">
           <Console output={code} />

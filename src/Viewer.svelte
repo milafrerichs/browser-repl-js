@@ -1,17 +1,35 @@
 <script>
 	import srcdoc from './srcdoc/index.js';
 	import { onMount } from 'svelte';
+
+  import {
+    code as code_store,
+    html as html_store,
+    ready as ready_store
+  } from './stores.js'
+
 	let iframe;
 	export let injectedJS = '';
 	export let injectedCSS = '';
   export let injectedLibraries = [];
-  export let html = '';
-	export let code = '';
-	export let ready = false;
+
+  let code;
+  let html;
+  let ready;
+
+  const unsubscribe_code = code_store.subscribe(value => {
+    code = value;
+  });
+  const unsubscribe_html = html_store.subscribe(value => {
+    html = value;
+  });
+  const unsubscribe_ready = ready_store.subscribe(value => {
+    ready = value;
+  });
 	let message = '';
 	onMount(() => {
 		iframe.addEventListener('load', () => {
-			ready = true;
+			ready_store.set(true);
 		});
 	});
 	$: if(ready && (code || html)) {

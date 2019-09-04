@@ -1,7 +1,14 @@
 <script>
 	import Viewer from './Viewer.svelte';
 	import { onMount } from 'svelte';
-  export let output
+  import { code } from './stores.js';
+
+  let output;
+
+  const unsubscribe_code = code.subscribe(value => {
+    output = value;
+  });
+
   let message = '';
 	$: if(output) {
 		message = `
