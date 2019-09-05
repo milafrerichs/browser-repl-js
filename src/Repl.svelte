@@ -2,6 +2,9 @@
   import Viewer from './Viewer.svelte';
   import Editor from './Editor.svelte';
   import Console from './Console.svelte';
+  import Default from './layouts/Default.svelte';
+  import Minimal from './layouts/Minimal.svelte';
+  import MinimalReverse from './layouts/MinimalReverse.svelte';
 
   let ready = false;
   let editor;
@@ -12,7 +15,15 @@
   let currentContent = '';
   let code = '';
   let html = '';
+
+  const layouts = new Map([
+    [ 'default', Default ],
+    [ 'minimal-reverse', MinimalReverse ],
+    [ 'minimal', Minimal ]
+  ]);
+
   export let mode = 'normal';
+  export let layout = 'default';
   export let changedCode = () => {};
   export let files = [];
   export let injectedLibraries = [];
@@ -92,6 +103,8 @@
     editor.update(currentFile.content);
   }
 
+  $: selectedLayout = layouts.get(layout || 'default')
+
   $: if(files && ready) {
     manualUpdates = false;
     currentFile = files[currentFileIndex];
@@ -131,41 +144,11 @@
   }
 </style>
 
-<div class="{cssStyles.container}" >
-  <div class="result-container {cssStyles.resultContainer}">
-    {#if showEditor}
-      <div class:hidden="{!showEditor}" class="{cssStyles.editor}">
-        {#if showFiles}
-          <div class="{cssStyles.editorActions.container}">
-            {#each files as { name }, i}
-              <div class="{cssStyles.editorActions.tabItem}">
-                <a class:active="{currentFileIndex == i}" class="{cssStyles.editorActions.link}" on:click="{() => showFile(i)}">{name}</a>
-              </div>
-            {/each}
-          </div>
-        {/if}
-        <Editor bind:this={editor} on:change={debounceChangeCode}/>
-      </div>
-    {/if}
-    <div class:view-only="{!showEditor}" class="{cssStyles.viewerContainer}">
-      {#if showTabs}
-        <div class="{cssStyles.viewerActions.container}">
-          <div class="{cssStyles.viewerActions.tabItem}">
-            <a class:active="{tab == 'viewer'}" class="{cssStyles.viewerActions.link}" on:click="{() => showResult()}">Result</a>
-          </div>
-          <div class="{cssStyles.viewerActions.tabItem}">
-            <a class:active="{tab == 'console'}" class="{cssStyles.viewerActions.link}" on:click="{() => showConsole()}">Console</a>
-          </div>
-        </div>
-    {/if}
-      <div class="{cssStyles.viewerConsoleContainer}">
-        <div class:hidden="{tab != 'viewer'}" class="{cssStyles.viewer}">
-          <Viewer bind:ready={ready} {code} {injectedLibraries} {html} {injectedJS} />
-        </div>
-        <div class:hidden="{tab != 'console'}" class="{cssStyles.console}">
-          <Console output={code} />
-        </div>
-      </div>
-    </div>
+<svelte:component this={selectedLayout} {cssStyles} {tab} {showEditor} {files} >
+  <div slot="editor">
+    <Editor bind:this={editor} on:change={debounceChangeCode}/>
   </div>
-</div>
+  <div slot="viewer">
+    <Viewer bind:ready={ready} {code} {injectedLibraries} {html} {injectedJS} />
+  </div>
+</svelte:component>
