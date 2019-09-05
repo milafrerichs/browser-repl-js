@@ -87,5 +87,5 @@
 
 </script>
 
-<Repl {files} />
+<Repl layout={'default'} {files} />
 

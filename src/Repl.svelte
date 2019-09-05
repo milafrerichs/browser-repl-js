@@ -1,18 +1,33 @@
 <script>
   import Viewer from './Viewer.svelte';
+  import ViewerConsole from './ViewerConsole.svelte';
   import Editor from './Editor.svelte';
   import Console from './Console.svelte';
+  import Default from './layouts/Default.svelte';
+  import Minimal from './layouts/Minimal.svelte';
+  import MinimalReverse from './layouts/MinimalReverse.svelte';
 
-  let ready = false;
+  import {
+    code,
+    html,
+    ready,
+    files as file_store,
+    injectedJS as injectedJS_store,
+    injectedLibraries as injectedLibraries_store,
+    currentFile
+  } from './stores.js'
+
   let editor;
   let manualUpdates = false;
-  let tab = 'viewer';
-  let currentFile = {};
-  let currentFileIndex = 0;
   let currentContent = '';
-  let code = '';
-  let html = '';
-  export let mode = 'normal';
+
+  const layouts = new Map([
+    [ 'default', Default ],
+    [ 'minimal-reverse', MinimalReverse ],
+    [ 'minimal', Minimal ]
+  ]);
+
+  export let layout = 'default';
   export let changedCode = () => {};
   export let files = [];
   export let injectedLibraries = [];
@@ -55,10 +70,10 @@
     currentContent = event.detail.value;
     manualUpdates = true;
     changedCode();
-    if (currentFile.type === 'js') {
-      code = currentContent;
+    if ($currentFile.type === 'js') {
+      code.set(currentContent);
     } else {
-      html = currentContent.replace(/\n/g,'');
+      html.set(currentContent.replace(/\n/g,''));
     }
   }
 
@@ -73,44 +88,37 @@
   }
 
   function update() {
-    code = getContentForType('js') || '';
-    html = getContentForType('html') || '';
-    if(!html) html = '';
+    code.set(getContentForType('js') || '');
+    html.set(getContentForType('html') || '');
     if(editor) {
-      editor.update(currentFile.content);
+      editor.update($currentFile.content);
     }
-
   }
 
-  $: showEditor = (mode === 'normal' || mode === 'minimal')
-  $: showTabs = (mode === 'normal' || mode === 'view')
-  $: showFiles = (mode === 'normal' || mode === 'view')
-
-  $: currentFile = files[currentFileIndex]
-
-  $: if(editor && currentFile) {
-    editor.update(currentFile.content);
+  $: if(files) {
+    file_store.set(files);
+  }
+  $: if(injectedJS) {
+    injectedJS_store.set(injectedJS);
+  }
+  $: if(injectedLibraries) {
+    injectedLibraries_store.set(injectedLibraries);
+  }
+  $: if(editor && $currentFile) {
+    editor.update($currentFile.content);
   }
 
-  $: if(files && ready) {
+  $: if(files && $ready) {
     manualUpdates = false;
-    currentFile = files[currentFileIndex];
     update();
   }
 
-  $: if(ready && !manualUpdates) {
+  $: if($ready && !manualUpdates) {
     update();
   }
-  function showFile(fileIndex) {
-    currentFile.content = currentContent;
-    currentFileIndex = fileIndex;
-  }
-  function showConsole() {
-    tab = 'console';
-  }
-  function showResult() {
-    tab = 'viewer';
-  }
+
+  $: selectedLayout = layouts.get(layout || 'default')
+
 </script>
 
 <style>
@@ -131,41 +139,17 @@
   }
 </style>
 
-<div class="{cssStyles.container}" >
-  <div class="result-container {cssStyles.resultContainer}">
-    {#if showEditor}
-      <div class:hidden="{!showEditor}" class="{cssStyles.editor}">
-        {#if showFiles}
-          <div class="{cssStyles.editorActions.container}">
-            {#each files as { name }, i}
-              <div class="{cssStyles.editorActions.tabItem}">
-                <a class:active="{currentFileIndex == i}" class="{cssStyles.editorActions.link}" on:click="{() => showFile(i)}">{name}</a>
-              </div>
-            {/each}
-          </div>
-        {/if}
-        <Editor bind:this={editor} on:change={debounceChangeCode}/>
-      </div>
-    {/if}
-    <div class:view-only="{!showEditor}" class="{cssStyles.viewerContainer}">
-      {#if showTabs}
-        <div class="{cssStyles.viewerActions.container}">
-          <div class="{cssStyles.viewerActions.tabItem}">
-            <a class:active="{tab == 'viewer'}" class="{cssStyles.viewerActions.link}" on:click="{() => showResult()}">Result</a>
-          </div>
-          <div class="{cssStyles.viewerActions.tabItem}">
-            <a class:active="{tab == 'console'}" class="{cssStyles.viewerActions.link}" on:click="{() => showConsole()}">Console</a>
-          </div>
-        </div>
-    {/if}
-      <div class="{cssStyles.viewerConsoleContainer}">
-        <div class:hidden="{tab != 'viewer'}" class="{cssStyles.viewer}">
-          <Viewer bind:ready={ready} {code} {injectedLibraries} {html} {injectedJS} />
-        </div>
-        <div class:hidden="{tab != 'console'}" class="{cssStyles.console}">
-          <Console output={code} />
-        </div>
-      </div>
-    </div>
+<svelte:component this={selectedLayout} {cssStyles} >
+  <div slot="editor">
+    <Editor bind:this={editor} on:change={debounceChangeCode}/>
   </div>
-</div>
+  <div slot="viewer">
+    <Viewer {cssStyles} />
+  </div>
+  <div slot="viewer-console">
+    <ViewerConsole {cssStyles} />
+  </div>
+  <div slot="console">
+    <Console {cssStyles} />
+  </div>
+</svelte:component>
