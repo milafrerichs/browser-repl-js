@@ -1,7 +1,5 @@
 <script>
   export let cssStyles;
-  export let showEditor;
-  export let tab;
 </script>
 
 <div class="{cssStyles.container}" >

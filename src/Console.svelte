@@ -2,10 +2,10 @@
 	import Result from './Result.svelte';
 	import { onMount } from 'svelte';
 
-  export let output;
+  import { code } from './stores.js'
 
   let message = '';
-	$: if(output) {
+	$: if($code) {
 		message = `
 		document.body.innerHTML = '';
     var consoleOutput = '';
@@ -17,7 +17,7 @@
         consoleOutput += message + '<br />';
       }
     };
-		${output}
+		${$code}
 		document.body.innerHTML = '';
     document.body.innerHTML = consoleOutput;
 		`

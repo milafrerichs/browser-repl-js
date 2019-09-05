@@ -30,7 +30,7 @@
       <Viewer />
     </div>
     <div class:hidden="{tab != 'console'}" class="{cssStyles.console}">
-      <Console output={$code}/>
+      <Console />
     </div>
   </div>
 </div>
