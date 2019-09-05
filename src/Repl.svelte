@@ -1,19 +1,24 @@
 <script>
   import Viewer from './Viewer.svelte';
+  import ViewerConsole from './ViewerConsole.svelte';
   import Editor from './Editor.svelte';
   import Console from './Console.svelte';
   import Default from './layouts/Default.svelte';
   import Minimal from './layouts/Minimal.svelte';
   import MinimalReverse from './layouts/MinimalReverse.svelte';
 
-  let ready = false;
+  import {
+    code,
+    html as html_store,
+    ready as ready_store,
+    files as file_store,
+    currentFile
+  } from './stores.js'
+
   let editor;
   let manualUpdates = false;
-  let tab = 'viewer';
-  let currentFile = {};
-  let currentFileIndex = 0;
   let currentContent = '';
-  let code = '';
+
   let html = '';
 
   const layouts = new Map([
@@ -22,7 +27,15 @@
     [ 'minimal', Minimal ]
   ]);
 
-  export let mode = 'normal';
+  let ready = false;
+
+  const unsubscribe_html = html_store.subscribe(html => {
+    html = value;
+  });
+  const unsubscribe_ready = ready_store.subscribe(value => {
+    ready = value;
+  });
+
   export let layout = 'default';
   export let changedCode = () => {};
   export let files = [];
@@ -66,10 +79,10 @@
     currentContent = event.detail.value;
     manualUpdates = true;
     changedCode();
-    if (currentFile.type === 'js') {
-      code = currentContent;
+    if ($currentFile.type === 'js') {
+      code.set(currentContent);
     } else {
-      html = currentContent.replace(/\n/g,'');
+      html_store.set(currentContent.replace(/\n/g,''));
     }
   }
 
@@ -84,46 +97,33 @@
   }
 
   function update() {
-    code = getContentForType('js') || '';
-    html = getContentForType('html') || '';
+    code.set(getContentForType('js') || '');
+    html_store.set(getContentForType('html') || '');
     if(!html) html = '';
     if(editor) {
-      editor.update(currentFile.content);
+      editor.update($currentFile.content);
     }
 
   }
 
-  $: showEditor = (mode === 'normal' || mode === 'minimal')
-  $: showTabs = (mode === 'normal' || mode === 'view')
-  $: showFiles = (mode === 'normal' || mode === 'view')
-
-  $: currentFile = files[currentFileIndex]
-
-  $: if(editor && currentFile) {
-    editor.update(currentFile.content);
+  $: if(files) {
+    file_store.set(files);
   }
-
-  $: selectedLayout = layouts.get(layout || 'default')
+  $: if(editor && $currentFile) {
+    editor.update($currentFile.content);
+  }
 
   $: if(files && ready) {
     manualUpdates = false;
-    currentFile = files[currentFileIndex];
     update();
   }
 
   $: if(ready && !manualUpdates) {
     update();
   }
-  function showFile(fileIndex) {
-    currentFile.content = currentContent;
-    currentFileIndex = fileIndex;
-  }
-  function showConsole() {
-    tab = 'console';
-  }
-  function showResult() {
-    tab = 'viewer';
-  }
+
+  $: selectedLayout = layouts.get(layout || 'default')
+
 </script>
 
 <style>
@@ -144,11 +144,17 @@
   }
 </style>
 
-<svelte:component this={selectedLayout} {cssStyles} {tab} {showEditor} {files} >
+<svelte:component this={selectedLayout} {cssStyles} {files} >
   <div slot="editor">
     <Editor bind:this={editor} on:change={debounceChangeCode}/>
   </div>
   <div slot="viewer">
-    <Viewer bind:ready={ready} {code} {injectedLibraries} {html} {injectedJS} />
+    <Viewer {cssStyles} {injectedLibraries} {injectedJS} />
+  </div>
+  <div slot="viewer-console">
+    <ViewerConsole {cssStyles} {injectedLibraries} {injectedJS} />
+  </div>
+  <div slot="console">
+    <Console {cssStyles} {injectedLibraries} {injectedJS} />
   </div>
 </svelte:component>
