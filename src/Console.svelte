@@ -1,13 +1,8 @@
 <script>
-	import Viewer from './Viewer.svelte';
+	import Result from './Result.svelte';
 	import { onMount } from 'svelte';
-  import { code } from './stores.js';
 
-  let output;
-
-  const unsubscribe_code = code.subscribe(value => {
-    output = value;
-  });
+  export let output;
 
   let message = '';
 	$: if(output) {
@@ -28,4 +23,4 @@
 		`
 	}
 </script>
-<Viewer code={message} />
+<Result html={''} code={message} />

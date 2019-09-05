@@ -5,11 +5,9 @@
 </script>
 
 <div class="{cssStyles.container}" >
-  <div class:view-only="{!showEditor}" class="{cssStyles.viewerContainer}">
+  <div class="{cssStyles.viewerContainer}">
     <div class="{cssStyles.viewerConsoleContainer}">
-      <div class:hidden="{tab != 'viewer'}" class="{cssStyles.viewer}">
-        <slot name="viewer"></slot>
-      </div>
+      <slot name="viewer"></slot>
     </div>
   </div>
   <div class="result-container {cssStyles.resultContainer}">

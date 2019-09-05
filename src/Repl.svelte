@@ -9,9 +9,11 @@
 
   import {
     code,
-    html as html_store,
-    ready as ready_store,
+    html,
+    ready,
     files as file_store,
+    injectedJS as injectedJS_store,
+    injectedLibraries as injectedLibraries_store,
     currentFile
   } from './stores.js'
 
@@ -19,22 +21,11 @@
   let manualUpdates = false;
   let currentContent = '';
 
-  let html = '';
-
   const layouts = new Map([
     [ 'default', Default ],
     [ 'minimal-reverse', MinimalReverse ],
     [ 'minimal', Minimal ]
   ]);
-
-  let ready = false;
-
-  const unsubscribe_html = html_store.subscribe(html => {
-    html = value;
-  });
-  const unsubscribe_ready = ready_store.subscribe(value => {
-    ready = value;
-  });
 
   export let layout = 'default';
   export let changedCode = () => {};
@@ -82,7 +73,7 @@
     if ($currentFile.type === 'js') {
       code.set(currentContent);
     } else {
-      html_store.set(currentContent.replace(/\n/g,''));
+      html.set(currentContent.replace(/\n/g,''));
     }
   }
 
@@ -98,27 +89,31 @@
 
   function update() {
     code.set(getContentForType('js') || '');
-    html_store.set(getContentForType('html') || '');
-    if(!html) html = '';
+    html.set(getContentForType('html') || '');
     if(editor) {
       editor.update($currentFile.content);
     }
-
   }
 
   $: if(files) {
     file_store.set(files);
   }
+  $: if(injectedJS) {
+    injectedJS_store.set(injectedJS);
+  }
+  $: if(injectedLibraries) {
+    injectedLibraries_store.set(injectedLibraries);
+  }
   $: if(editor && $currentFile) {
     editor.update($currentFile.content);
   }
 
-  $: if(files && ready) {
+  $: if(files && $ready) {
     manualUpdates = false;
     update();
   }
 
-  $: if(ready && !manualUpdates) {
+  $: if($ready && !manualUpdates) {
     update();
   }
 
@@ -144,17 +139,17 @@
   }
 </style>
 
-<svelte:component this={selectedLayout} {cssStyles} {files} >
+<svelte:component this={selectedLayout} {cssStyles} >
   <div slot="editor">
     <Editor bind:this={editor} on:change={debounceChangeCode}/>
   </div>
   <div slot="viewer">
-    <Viewer {cssStyles} {injectedLibraries} {injectedJS} />
+    <Viewer {cssStyles} />
   </div>
   <div slot="viewer-console">
-    <ViewerConsole {cssStyles} {injectedLibraries} {injectedJS} />
+    <ViewerConsole {cssStyles} />
   </div>
   <div slot="console">
-    <Console {cssStyles} {injectedLibraries} {injectedJS} />
+    <Console {cssStyles} />
   </div>
 </svelte:component>
