@@ -5,6 +5,10 @@
   import { code } from './stores.js'
 
   export let cssStyles;
+  export let width = 0;
+  export let height = 0;
+  let iframeComtainerWidth;
+  let iframeComtainerHeight;
 
   let tab = 'viewer';
 
@@ -25,12 +29,12 @@
       <a class:active="{tab == 'console'}" class="{cssStyles.viewerActions.link}" on:click="{() => showConsole()}">Console</a>
     </div>
   </div>
-  <div class="{cssStyles.viewerConsoleContainer}">
-    <div class:hidden="{tab != 'viewer'}" class="{cssStyles.viewer}">
-      <Viewer />
+  <div class="{cssStyles.viewerConsoleContainer}" bind:clientWidth={iframeComtainerWidth} bind:clientHeight={iframeComtainerHeight} >
+    <div class:hidden="{tab != 'viewer'}" class="{cssStyles.viewer}" >
+      <Viewer width={iframeComtainerWidth} height={iframeComtainerHeight} />
     </div>
-    <div class:hidden="{tab != 'console'}" class="{cssStyles.console}">
-      <Console />
+    <div class:hidden="{tab != 'console'}" class="{cssStyles.console}" >
+      <Console width={iframeComtainerWidth} height={iframeComtainerHeight} />
     </div>
   </div>
 </div>

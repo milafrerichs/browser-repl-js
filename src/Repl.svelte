@@ -20,6 +20,8 @@
   let editor;
   let manualUpdates = false;
   let currentContent = '';
+  let iframeComtainerWidth;
+  let iframeComtainerHeight;
 
   const layouts = new Map([
     [ 'default', Default ],
@@ -139,12 +141,12 @@
   }
 </style>
 
-<svelte:component this={selectedLayout} {cssStyles} >
+<svelte:component this={selectedLayout} {cssStyles} let:width={width} let:height={height} >
   <div slot="editor">
     <Editor bind:this={editor} on:change={debounceChangeCode}/>
   </div>
   <div slot="viewer">
-    <Viewer {cssStyles} />
+    <Viewer {width} {height} />
   </div>
   <div slot="viewer-console">
     <ViewerConsole {cssStyles} />

@@ -4,6 +4,9 @@
 
   import { code } from './stores.js'
 
+  export let width;
+  export let height;
+
   let message = '';
 	$: if($code) {
 		message = `
@@ -23,4 +26,4 @@
 		`
 	}
 </script>
-<Result html={''} code={message} />
+<Result {width} {height} html={''} code={message} />
