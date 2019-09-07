@@ -10,6 +10,8 @@
 
 	let iframe;
 	export let injectedCSS = '';
+  export let width;
+  export let height;
   export let code;
   export let html;
 
@@ -44,10 +46,16 @@
       }`
     })
   }
+  function handleResize() {
+		iframe.contentWindow.postMessage({ script: message }, '*');
+  }
 </script>
+<svelte:window on:resize={handleResize}/>
 <iframe
 	title="Result"
 	sandbox="allow-scripts allow-same-origin"
 	bind:this={iframe}
 	{srcdoc}
+  {width}
+  {height}
 	></iframe>
