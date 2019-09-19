@@ -6,6 +6,7 @@
   import Default from './layouts/Default.svelte';
   import Minimal from './layouts/Minimal.svelte';
   import MinimalReverse from './layouts/MinimalReverse.svelte';
+  import View from './layouts/View.svelte';
 
   import {
     code,
@@ -26,7 +27,8 @@
   const layouts = new Map([
     [ 'default', Default ],
     [ 'minimal-reverse', MinimalReverse ],
-    [ 'minimal', Minimal ]
+    [ 'minimal', Minimal ],
+    [ 'view', View ]
   ]);
 
   export let layout = 'default';
