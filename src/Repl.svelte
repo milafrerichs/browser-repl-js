@@ -21,8 +21,8 @@
   let editor;
   let manualUpdates = false;
   let currentContent = '';
-  let iframeComtainerWidth;
-  let iframeComtainerHeight;
+  let width;
+  let height;
 
   const layouts = new Map([
     [ 'default', Default ],
