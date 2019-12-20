@@ -1,7 +1,10 @@
 <style>
+  :global(.container) {
+    height: 100vh;
+  }
   :global(.tutorial-container) {
     width: 100%;
-    height: 100%;
+    height: 100vh;
     display: flex;
   }
   :global(.content-container) {
@@ -81,11 +84,16 @@
       type: 'js'
     }
   ];
+  let layout = 'default'
   function changedCode() {
     console.log('changed the code')
+  }
+  function changeLayout() {
+    layout = (layout === 'default' ? 'view' : 'default');
   }
 
 </script>
 
-<Repl layout={'default'} {files} />
+<a href="javascript:;" on:click={changeLayout}>Change Layout</a>
+<Repl  {layout} {files} />
 

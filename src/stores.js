@@ -1,6 +1,5 @@
 import { writable, derived } from 'svelte/store';
 
-export const ready = writable(false);
 export const code = writable('');
 export const html = writable('');
 export const tab = writable('viewer');
@@ -15,3 +14,18 @@ export const currentFile = derived(
   [files, currentFileIndex],
   ([$files, $currentFileIndex]) => $files[$currentFileIndex]
 );
+
+const createIframe = () => {
+  const { subscribe, set, update } = writable({});
+
+  return {
+    subscribe,
+    setReady: (ready, name) => {
+      return update((n) => {
+        n[name] = ready;
+        return n;
+      })
+    }
+  }
+}
+export const iframeReady = createIframe();
