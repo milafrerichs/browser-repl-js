@@ -1,11 +1,11 @@
 <script>
 	import srcdoc from './srcdoc/index.js';
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 
   import {
-    ready,
     injectedJS,
-    injectedLibraries
+    injectedLibraries,
+    iframeReady
   } from './stores.js'
 
 	let iframe;
@@ -14,14 +14,25 @@
   export let height;
   export let code;
   export let html;
+  export let name = 'viewer';
+  let ready = false;
 
 	let message = '';
+
+  const setReady = () => {
+    iframeReady.setReady(true, name)
+    iframeReady.subscribe((value) => {
+      ready = value[name] || false;
+    })
+  }
 	onMount(() => {
-		iframe.addEventListener('load', () => {
-			ready.set(true);
-		});
+		iframe.addEventListener('load', setReady);
 	});
-	$: if($ready && (code || html)) {
+	onDestroy(() => {
+    iframeReady.setReady(false, name)
+		iframe.removeEventListener('load', setReady);
+	});
+	$: if(ready && iframe && (code || html)) {
 		message = `
     ${$injectedJS}
     ${styles}

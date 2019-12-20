@@ -26,4 +26,4 @@
 		`
 	}
 </script>
-<Result {width} {height} html={''} code={message} />
+<Result name={'console'} {width} {height} html={''} code={message} />

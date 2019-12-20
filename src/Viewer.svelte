@@ -7,4 +7,4 @@
 
 </script>
 
-<Result {width} {height} code={$code} html={$html} />
+<Result name={'viewer'} {width} {height} code={$code} html={$html} />

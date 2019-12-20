@@ -1,4 +1,6 @@
 <script>
+	import { onMount, onDestroy } from 'svelte';
+
   import Viewer from './Viewer.svelte';
   import ViewerConsole from './ViewerConsole.svelte';
   import Editor from './Editor.svelte';
@@ -11,7 +13,7 @@
   import {
     code,
     html,
-    ready,
+    iframeReady,
     files as file_store,
     injectedJS as injectedJS_store,
     injectedLibraries as injectedLibraries_store,
@@ -20,6 +22,7 @@
 
   let editor;
   let manualUpdates = false;
+  let layoutiFrameReady = false;
   let currentContent = '';
   let width;
   let height;
@@ -29,6 +32,12 @@
     [ 'minimal-reverse', MinimalReverse ],
     [ 'minimal', Minimal ],
     [ 'view', View ]
+  ]);
+  const iframeLayouts = new Map([
+    [ 'default', ['viewer', 'console']],
+    [ 'minimal-reverse', ['viewer']],
+    [ 'minimal', ['viewer']],
+    [ 'view', ['viewer']]
   ]);
 
   export let layout = 'default';
@@ -55,6 +64,15 @@
     editor: 'editor',
     viewer: 'viewer',
   };
+
+	onMount(() => {
+    iframeReady.subscribe((value) => {
+      const iframes = iframeLayouts.get(layout || 'default')
+      layoutiFrameReady = iframes.reduce((s, v) => (value[v] || false) && s, true)
+    })
+	});
+	onDestroy(() => {
+	});
 
   const debounce = (func, delay) => {
     let inDebounce
@@ -112,12 +130,12 @@
     editor.update($currentFile.content);
   }
 
-  $: if(files && $ready) {
+  $: if(files && layoutiFrameReady) {
     manualUpdates = false;
     update();
   }
 
-  $: if($ready && !manualUpdates) {
+  $: if(layoutiFrameReady && !manualUpdates) {
     update();
   }
 

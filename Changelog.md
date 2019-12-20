@@ -1,3 +1,7 @@
+# v0.4.4
+##Fixed
+Changing the layout should not break the code. And the iframes should now always be available when we post messages to them.
+
 # v0.3.0
 ## Added
 New `mode` prop
