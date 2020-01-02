@@ -1,5 +1,9 @@
+# v0.5.0
+## Added
+Added Svelte JSON Tree to the project to pretifx the console output and allow to show more values than just objects
+
 # v0.4.4
-##Fixed
+## Fixed
 Changing the layout should not break the code. And the iframes should now always be available when we post messages to them.
 
 # v0.3.0
