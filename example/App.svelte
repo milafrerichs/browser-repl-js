@@ -91,9 +91,24 @@
   function changeLayout() {
     layout = (layout === 'default' ? 'view' : 'default');
   }
+  function resetFiles() {
+    files = [
+      {
+        name: 'index.html',
+        content: '<h1>Test</h1>',
+        type: 'html'
+      },
+      {
+        name: 'index.js',
+        content: '',
+        type: 'js'
+      }
+    ];
+  }
 
 </script>
 
 <a href="javascript:;" on:click={changeLayout}>Change Layout</a>
+<a href="javascript:;" on:click={resetFiles}>Reset</a>
 <Repl  {layout} {files} />
 

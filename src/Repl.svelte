@@ -77,11 +77,15 @@
   });
 
   function handleSelect() {
-    editor.set($currentContent);
+    if(editor) {
+      editor.set($currentContent);
+    }
   }
 
   $: if(files) {
+    bundle.set({});
     file_store.set(files);
+    handleSelect();
   }
   $: if(injectedJS) {
     injectedJS_store.set(injectedJS);

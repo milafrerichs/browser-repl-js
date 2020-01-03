@@ -1,3 +1,9 @@
+# v0.6.1
+## Fixed
+- Resetting of the code now works again
+- destroying of the component resulted in an error
+- add width of viewer/console layout back in
+
 # v0.6.0
 ## Changed
 Internal changes to how the iframes work and how messages are posted, should improve performance and future use

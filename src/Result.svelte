@@ -86,7 +86,6 @@
     }
   });
   onDestroy(() => {
-    iframeReady.setReady(false, name)
     iframe.removeEventListener('load', setReady);
   });
 
