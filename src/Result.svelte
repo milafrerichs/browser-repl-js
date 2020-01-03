@@ -34,15 +34,15 @@
     if (!bundle || bundle.error) return;
     try {
       await proxy.eval(`
-      ${$injectedJS}
-      ${libraries}
-      ${styles}
-      document.body.innerHTML = '';
-      ${$bundledCode}
-      `)
+                       ${$injectedJS}
+                       ${libraries}
+                       ${styles}
+                       document.body.innerHTML = '';
+                       ${$bundledCode}
+                       `)
     } catch (e) {
       console.error(e)
-		}
+    }
   }
 
   const setReady = () => {
@@ -92,34 +92,34 @@
 
   $: if(ready) applyBundle($bundle)
 
-  $: styles = injectedCSS && `{
-  const style = document.createElement('style');
-  style.textContent = ${JSON.stringify(injectedCSS)};
-  document.head.appendChild(style);
-  }`;
-  $: if($injectedLibraries.length > 0) {
-    libraries = $injectedLibraries.map((lib) => {
-      return `
-      const script = document.createElement('script');
-      script.type= 'text/javascript';
-      script.src = '${lib}';
-      document.head.appendChild(script);
-      `
-    }).join('\n')
-  }
-  function handleResize() {
-    applyBunde($bundle);
-  }
-  function push_logs(log) {
-    logs.set([...$logs, log]);
-  }
+    $: styles = injectedCSS && `
+      const style = document.createElement('style');
+      style.textContent = ${JSON.stringify(injectedCSS)};
+      document.head.appendChild(style);
+    `;
+    $: if($injectedLibraries.length > 0) {
+      libraries = $injectedLibraries.map((lib) => {
+        return `
+        const script = document.createElement('script');
+        script.type= 'text/javascript';
+        script.src = '${lib}';
+        document.head.appendChild(script);
+        `
+      }).join('\n')
+    }
+    function handleResize() {
+      applyBunde($bundle);
+    }
+    function push_logs(log) {
+      logs.set([...$logs, log]);
+    }
 </script>
 <svelte:window on:resize={handleResize}/>
 <iframe
-    title="Result"
-    sandbox="allow-scripts allow-same-origin"
-    bind:this={iframe}
-    {srcdoc}
-    {width}
-    {height}
-    ></iframe>
+       title="Result"
+       sandbox="allow-scripts allow-same-origin"
+       bind:this={iframe}
+       {srcdoc}
+       {width}
+       {height}
+       ></iframe>

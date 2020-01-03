@@ -1,5 +1,5 @@
 <script>
-	import { setContext, onMount, onDestroy } from 'svelte';
+  import { setContext, onMount, onDestroy } from 'svelte';
   import { writable } from 'svelte/store';
 
   import Viewer from './Viewer.svelte';
@@ -77,8 +77,8 @@
   });
 
   function handleSelect() {
-		editor.set($currentContent);
-	}
+    editor.set($currentContent);
+  }
 
   $: if(files) {
     file_store.set(files);
