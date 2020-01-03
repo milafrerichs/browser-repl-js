@@ -1,5 +1,5 @@
 <script>
-  import { onMount, onDestroy } from 'svelte';
+  import { getContext, onMount, onDestroy } from 'svelte';
 
   import srcdoc from './srcdoc/index.js';
 
@@ -8,9 +8,12 @@
   import {
     injectedJS,
     injectedLibraries,
-    iframeReady,
+    bundle,
+    bundledCode,
     logs
   } from './stores.js'
+
+  const { registerOutput } = getContext('REPL');
 
   let iframe;
   export let injectedCSS = '';
@@ -27,11 +30,23 @@
   let proxy = null;
   let last_console_event;
 
+  async function applyBundle(bundle) {
+    if (!bundle || bundle.error) return;
+    try {
+      await proxy.eval(`
+      ${$injectedJS}
+      ${libraries}
+      ${styles}
+      document.body.innerHTML = '';
+      ${$bundledCode}
+      `)
+    } catch (e) {
+      console.error(e)
+		}
+  }
+
   const setReady = () => {
-    iframeReady.setReady(true, name)
-    iframeReady.subscribe((value) => {
-      ready = value[name] || false;
-    })
+    ready = true;
   }
   onMount(() => {
     proxy = new ReplProxy(iframe, {
@@ -74,18 +89,9 @@
     iframeReady.setReady(false, name)
     iframe.removeEventListener('load', setReady);
   });
-  $: if(ready && iframe && (code || html)) {
-    message = `
-    ${$injectedJS}
-    ${libraries}
-    ${styles}
-    document.body.innerHTML = '';
-    document.body.innerHTML = '${html}';
-    ${code}
-    `
-    proxy.eval(message)
-    //iframe.contentWindow.postMessage({ script: message }, '*');
-  }
+
+  $: if(ready) applyBundle($bundle)
+
   $: styles = injectedCSS && `{
   const style = document.createElement('style');
   style.textContent = ${JSON.stringify(injectedCSS)};
@@ -93,17 +99,16 @@
   }`;
   $: if($injectedLibraries.length > 0) {
     libraries = $injectedLibraries.map((lib) => {
-      return `{
+      return `
       const script = document.createElement('script');
       script.type= 'text/javascript';
       script.src = '${lib}';
       document.head.appendChild(script);
-      }`
-    })
+      `
+    }).join('\n')
   }
   function handleResize() {
-    //proxy.eval(message)
-    //iframe.contentWindow.postMessage({ script: message }, '*');
+    applyBunde($bundle);
   }
   function push_logs(log) {
     logs.set([...$logs, log]);

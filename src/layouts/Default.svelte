@@ -1,13 +1,17 @@
 <script>
+  import { getContext } from 'svelte';
   import {
     files,
     currentFileIndex
   } from './../stores.js'
 
+  const { navigate } = getContext('REPL');
+
   export let cssStyles;
 
   function showFile(fileIndex) {
     currentFileIndex.set(fileIndex);
+    navigate(fileIndex);
   }
 </script>
 
