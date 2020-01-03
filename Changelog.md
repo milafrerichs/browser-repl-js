@@ -1,3 +1,7 @@
+# v0.6.0
+## Changed
+Internal changes to how the iframes work and how messages are posted, should improve performance and future use
+
 # v0.5.1
 ## Changed
 Use Svelte JSON tree directly inside the component, and remove the extra iframe for the console
