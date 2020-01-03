@@ -25,6 +25,7 @@ const createBundle = () => {
 
   return {
     subscribe,
+    set,
     changeCode: (file, code) => {
       return update((n) => {
         n[file.name] = code;
