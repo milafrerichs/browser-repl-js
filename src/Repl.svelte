@@ -1,5 +1,6 @@
 <script>
-	import { onMount, onDestroy } from 'svelte';
+  import { setContext, onMount, onDestroy } from 'svelte';
+  import { writable } from 'svelte/store';
 
   import Viewer from './Viewer.svelte';
   import ViewerConsole from './ViewerConsole.svelte';
@@ -13,17 +14,18 @@
   import {
     code,
     html,
-    iframeReady,
     files as file_store,
     injectedJS as injectedJS_store,
     injectedLibraries as injectedLibraries_store,
-    currentFile
+    currentFileIndex,
+    currentContent,
+    currentFile,
+    bundledCode,
+    bundle
   } from './stores.js'
 
   let editor;
-  let manualUpdates = false;
-  let layoutiFrameReady = false;
-  let currentContent = '';
+  let output;
   let width;
   let height;
 
@@ -33,19 +35,12 @@
     [ 'minimal', Minimal ],
     [ 'view', View ]
   ]);
-  const iframeLayouts = new Map([
-    [ 'default', ['viewer', 'console']],
-    [ 'minimal-reverse', ['viewer']],
-    [ 'minimal', ['viewer']],
-    [ 'view', ['viewer']]
-  ]);
 
   export let layout = 'default';
   export let changedCode = () => {};
   export let files = [];
   export let injectedLibraries = [];
   export let injectedJS = '';
-  export let debounceTime = 300;
   export let cssStyles = {
     container: 'container',
     resultContainer: 'result-container',
@@ -65,56 +60,24 @@
     viewer: 'viewer',
   };
 
-	onMount(() => {
-    iframeReady.subscribe((value) => {
-      const iframes = iframeLayouts.get(layout || 'default')
-      layoutiFrameReady = iframes.reduce((s, v) => (value[v] || false) && s, true)
-    })
-	});
-	onDestroy(() => {
-	});
+  const selected = writable(null);
 
-  const debounce = (func, delay) => {
-    let inDebounce
-    return function() {
-      const context = this
-      const args = arguments
-      clearTimeout(inDebounce)
-      inDebounce = setTimeout(() =>
-        func.apply(context, args)
-      , delay)
-    }
-  }
+  setContext('REPL', {
+    navigate: index => {
+      handleSelect()
+    },
+    handleChange: event => {
+      bundle.changeCode($currentFile, event);
+      changedCode(event)
+    },
+    registerEditor(registredEditor) {
+      editor = registredEditor;
+      editor.set($currentContent);
+    },
+  });
 
-  const debounceChangeCode = debounce(changeCode, debounceTime);
-
-  function changeCode(event) {
-    currentContent = event.detail.value;
-    manualUpdates = true;
-    changedCode();
-    if ($currentFile.type === 'js') {
-      code.set(currentContent);
-    } else {
-      html.set(currentContent.replace(/\n/g,''));
-    }
-  }
-
-
-  function getContentForType(type = 'js') {
-    return files.reduce((content, file) => {
-      if(file.type === type) {
-        return content + file.content;
-      }
-      return content;
-    }, '');
-  }
-
-  function update() {
-    code.set(getContentForType('js') || '');
-    html.set(getContentForType('html') || '');
-    if(editor) {
-      editor.update($currentFile.content);
-    }
+  function handleSelect() {
+    editor.set($currentContent);
   }
 
   $: if(files) {
@@ -123,20 +86,8 @@
   $: if(injectedJS) {
     injectedJS_store.set(injectedJS);
   }
-  $: if(injectedLibraries) {
-    injectedLibraries_store.set(injectedLibraries);
-  }
-  $: if(editor && $currentFile) {
-    editor.update($currentFile.content);
-  }
-
-  $: if(files && layoutiFrameReady) {
-    manualUpdates = false;
-    update();
-  }
-
-  $: if(layoutiFrameReady && !manualUpdates) {
-    update();
+  $: if(injectedLibraries.length > 0) {
+    injectedLibraries_store.merge(injectedLibraries);
   }
 
   $: selectedLayout = layouts.get(layout || 'default')
@@ -163,7 +114,7 @@
 
 <svelte:component this={selectedLayout} {cssStyles} bind:width={width} bind:height={height} >
   <div slot="editor">
-    <Editor bind:this={editor} on:change={debounceChangeCode}/>
+    <Editor />
   </div>
   <div slot="viewer">
     <Viewer {width} {height} />

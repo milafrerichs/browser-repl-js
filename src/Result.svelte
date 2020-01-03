@@ -1,72 +1,125 @@
 <script>
-	import srcdoc from './srcdoc/index.js';
-	import { onMount, onDestroy } from 'svelte';
+  import { getContext, onMount, onDestroy } from 'svelte';
+
+  import srcdoc from './srcdoc/index.js';
+
+  import ReplProxy from './ReplProxy.js';
 
   import {
     injectedJS,
     injectedLibraries,
-    iframeReady
+    bundle,
+    bundledCode,
+    logs
   } from './stores.js'
 
-	let iframe;
-	export let injectedCSS = '';
+  const { registerOutput } = getContext('REPL');
+
+  let iframe;
+  export let injectedCSS = '';
   export let width;
   export let height;
   export let code;
   export let html;
   export let name = 'viewer';
   let ready = false;
+  let libraries;
 
-	let message = '';
+  //iframe vars
+  let message = '';
+  let proxy = null;
+  let last_console_event;
+
+  async function applyBundle(bundle) {
+    if (!bundle || bundle.error) return;
+    try {
+      await proxy.eval(`
+                       ${$injectedJS}
+                       ${libraries}
+                       ${styles}
+                       document.body.innerHTML = '';
+                       ${$bundledCode}
+                       `)
+    } catch (e) {
+      console.error(e)
+    }
+  }
 
   const setReady = () => {
-    iframeReady.setReady(true, name)
-    iframeReady.subscribe((value) => {
-      ready = value[name] || false;
-    })
+    ready = true;
   }
-	onMount(() => {
-		iframe.addEventListener('load', setReady);
-	});
-	onDestroy(() => {
+  onMount(() => {
+    proxy = new ReplProxy(iframe, {
+      on_fetch_progress: progress => {
+        pending_imports = progress;
+      },
+      on_error: event => {
+        push_logs({ level: 'error', args: [event.value]});
+      },
+      on_unhandled_rejection: event => {
+        let error = event.value;
+        if (typeof error === 'string') error = { message: error };
+        error.message = 'Uncaught (in promise): ' + error.message;
+        push_logs({ level: 'error', args: [error]});
+      },
+      on_console: log => {
+        if (log.level === 'clear') {
+          logs.set([log]);
+        } else if (log.duplicate) {
+          const last_log = logs[logs.length - 1];
+          if (last_log) {
+            last_log.count = (last_log.count || 1) + 1;
+            logs.set(logs);
+          } else {
+            last_console_event.count = 1;
+            logs.set([last_console_event]);
+          }
+        } else {
+          push_logs(log);
+          last_console_event = log;
+        }
+      }
+    });
+    iframe.addEventListener('load', setReady);
+    return () => {
+      proxy.destroy();
+    }
+  });
+  onDestroy(() => {
     iframeReady.setReady(false, name)
-		iframe.removeEventListener('load', setReady);
-	});
-	$: if(ready && iframe && (code || html)) {
-		message = `
-    ${$injectedJS}
-    ${styles}
-		document.body.innerHTML = '';
-    document.body.innerHTML = '${html}';
-		${code}
-		`
-		iframe.contentWindow.postMessage({ script: message }, '*');
-	}
-  $: styles = injectedCSS && `{
-    const style = document.createElement('style');
-    style.textContent = ${JSON.stringify(injectedCSS)};
-    document.head.appendChild(style);
-  }`;
-  $: if($injectedLibraries.length > 0) {
-    libraries = $injectedLibraries.map((lib) => {
-      return `{
+    iframe.removeEventListener('load', setReady);
+  });
+
+  $: if(ready) applyBundle($bundle)
+
+    $: styles = injectedCSS && `
+      const style = document.createElement('style');
+      style.textContent = ${JSON.stringify(injectedCSS)};
+      document.head.appendChild(style);
+    `;
+    $: if($injectedLibraries.length > 0) {
+      libraries = $injectedLibraries.map((lib) => {
+        return `
         const script = document.createElement('script');
         script.type= 'text/javascript';
         script.src = '${lib}';
         document.head.appendChild(script);
-      }`
-    })
-  }
-  function handleResize() {
-		iframe.contentWindow.postMessage({ script: message }, '*');
-  }
+        `
+      }).join('\n')
+    }
+    function handleResize() {
+      applyBunde($bundle);
+    }
+    function push_logs(log) {
+      logs.set([...$logs, log]);
+    }
 </script>
 <svelte:window on:resize={handleResize}/>
 <iframe
-	title="Result"
-	sandbox="allow-scripts allow-same-origin"
-	bind:this={iframe}
-	{srcdoc}
-  {width}
-  {height}
-	></iframe>
+       title="Result"
+       sandbox="allow-scripts allow-same-origin"
+       bind:this={iframe}
+       {srcdoc}
+       {width}
+       {height}
+       ></iframe>

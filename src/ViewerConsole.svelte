@@ -31,7 +31,7 @@
   </div>
   <div class="{cssStyles.viewerConsoleContainer}" bind:clientWidth={iframeComtainerWidth} bind:clientHeight={iframeComtainerHeight} >
     <div class:hidden="{tab != 'viewer'}" class="{cssStyles.viewer}" >
-      <Viewer width={iframeComtainerWidth} height={iframeComtainerHeight} />
+      <Viewer width={iframeComtainerWidth} />
     </div>
     <div class:hidden="{tab != 'console'}" class="{cssStyles.console}" >
       <Console width={iframeComtainerWidth} height={iframeComtainerHeight} />
