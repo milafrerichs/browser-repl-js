@@ -1,3 +1,7 @@
+# v0.5.1
+## Changed
+Use Svelte JSON tree directly inside the component, and remove the extra iframe for the console
+
 # v0.5.0
 ## Added
 Added Svelte JSON Tree to the project to pretifx the console output and allow to show more values than just objects

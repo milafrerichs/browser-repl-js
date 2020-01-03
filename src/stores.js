@@ -7,6 +7,7 @@ export const injectedLibraries = writable([]);
 export const injectedCSS = writable('');
 export const injectedJS = writable('');
 
+export const logs = writable([]);
 export const files = writable([]);
 export const currentFileIndex = writable(0);
 
